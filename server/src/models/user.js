@@ -6,10 +6,14 @@ const userSchema = new Schema({
     firstName: {
         type: String,
         required: true,
+        minlength: [3, "First name must be at least 3 characters long"],
+        maxlength: [20, "First name must be less than 20 characters long"],
     },
     lastName: {
         type: String,
         required: true,
+        minlength: [3, "Last name must be at least 3 characters long"],
+        maxlength: [20, "Last name must be less than 20 characters long"],
     },
     email: {
         type: String,
@@ -40,4 +44,4 @@ const userSchema = new Schema({
 
 const User = mongoose.model("students", userSchema);
 
-module.exports = User;
+module.exports = { User };
