@@ -4,6 +4,7 @@ const { User } = require("../models/user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const validator = require("validator");
+const domainList = require("../constant/domainList");
 
 // Create token
 const createToken = (userId) => {
@@ -55,7 +56,7 @@ authRouter.post("/signup", async (req, res) => {
             throw new Error("Invalid email");
         }
 
-        const validDomain = ['com', 'org', 'net', 'edu', 'gov', 'mil', 'int', 'co', 'io', 'ai', 'app', 'dev', 'tech', 'info', 'biz', 'me', 'tv', 'cc', 'in', 'uk', 'ca', 'au', 'de', 'fr', 'jp', 'cn', 'ru', 'br', 'mx', 'it', 'es', 'nl', 'se', 'no', 'dk', 'fi', 'pl', 'cz', 'hu', 'ro', 'bg', 'hr', 'si', 'sk', 'lt', 'lv', 'ee', 'ie', 'pt', 'gr', 'cy', 'mt', 'lu', 'be', 'at', 'ch', 'li', 'mc', 'ad', 'va', 'sm', 'it', 'va', 'sm', 'mc', 'ad', 'li', 'ch', 'at', 'be', 'lu', 'mt', 'cy', 'gr', 'pt', 'ie', 'ee', 'lv', 'lt', 'sk', 'si', 'hr', 'bg', 'ro', 'hu', 'cz', 'pl', 'fi', 'dk', 'no', 'se', 'nl', 'es', 'it', 'mx', 'br', 'ru', 'cn', 'jp', 'fr', 'de', 'au', 'ca', 'uk', 'in', 'cc', 'tv', 'me', 'biz', 'info', 'tech', 'dev', 'app', 'ai', 'io', 'co', 'int', 'mil', 'gov', 'edu', 'net', 'org'];
+        const validDomain = domainList;
         const valid = email.split('.').pop().toLowerCase();
         if (!validDomain.includes(valid)) {
             throw new Error("Invalid email domain");

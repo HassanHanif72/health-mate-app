@@ -4,6 +4,7 @@ require("dotenv").config();
 const { connectDB } = require("./config/database");
 const { authRouter } = require("./router/auth");
 const { userDataRouter } = require("./router/userData");
+const { publicRouter } = require("./router/public");
 
 const app = express();
 
@@ -11,8 +12,10 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
+
 app.use("/auth", authRouter);
 app.use("/user", userDataRouter);
+app.use("/public", publicRouter);
 
 // Connect to MongoDB
 connectDB();
