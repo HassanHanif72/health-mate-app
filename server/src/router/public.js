@@ -2,7 +2,7 @@ const express = require("express");
 const publicRouter = express.Router();
 const { User } = require("../models/user.js");
 const validator = require("validator");
-const domainList = require("../constant/domainList.js");
+const { domainList } = require("../constants/domainList.js");
 
 // Create User
 publicRouter.post("/users", async (req, res) => {
@@ -11,6 +11,9 @@ publicRouter.post("/users", async (req, res) => {
         await user.save();
         res.status(201).json(user);
     } catch (error) {
+        if (error && error.code === 11000) {
+            return res.status(409).json({ message: "User already exists" });
+        }
         res.status(400).json({ message: error.message });
     }
 });
@@ -55,6 +58,9 @@ publicRouter.put("/users/:id", async (req, res) => {
         }
         res.status(200).json(user);
     } catch (error) {
+        if (error && error.code === 11000) {
+            return res.status(409).json({ message: "Email already in use" });
+        }
         res.status(400).json({ message: error.message });
     }
 });

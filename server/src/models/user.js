@@ -27,22 +27,12 @@ const userSchema = new Schema({
         type: String,
         required: true,
         trim: true,
-        validate: {
-            validator: function (value) {
-                return validator.isStrongPassword(value);
-            },
-            message: "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number and one special character",
-        }
-
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now,        
     },
 }, {
     timestamps: true,
+    collection: "students",
 });
 
-const User = mongoose.model("students", userSchema);
+const User = mongoose.model("User", userSchema);
 
 module.exports = { User };
