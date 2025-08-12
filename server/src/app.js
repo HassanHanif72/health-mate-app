@@ -5,12 +5,19 @@ const { connectDB } = require("./config/database");
 const { authRouter } = require("./router/auth");
 const { userDataRouter } = require("./router/userData");
 const { publicRouter } = require("./router/public");
+const cors = require("cors");
 
 const app = express();
 
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
+
+// CORS configuration
+app.use(cors({
+    origin: 'http://localhost:3000', // frontend URL
+    credentials: true
+}));
 
 
 app.use("/auth", authRouter);
