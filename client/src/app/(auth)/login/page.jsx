@@ -1,14 +1,19 @@
 'use client'
-import axios from 'axios';
+// import axios from 'axios';
+import { useLoginMutation } from '@/redux/services/authApi';
 import Link from 'next/link'
-import React, { useState } from 'react'
+import { useRouter } from 'next/navigation';
+import { useState } from 'react'
 
 const login = () => {
+  const Router = useRouter();
 
   const [form, setForm] = useState({
     email: '',
     password: ''
   });
+
+  const [login, { isLoading, isError, error }] = useLoginMutation();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -17,12 +22,13 @@ const login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/auth/login', form, {
-        withCredentials: true,
-      });
-      console.log(response);
+      const response = await login(form).unwrap();
+      console.log("Login successful:", response);
+      if (response) {
+        Router.push('/');
+      }
     } catch (error) {
-      console.error(error);
+      console.error("Login failed:", error);
     }
   };
 
@@ -85,12 +91,11 @@ const login = () => {
           </div>
 
           <div className='flex flex-col gap-4'>
-            <button
-              type="submit"
-              className="flex cursor-pointer w-full h-12 justify-center items-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
-            >
-              Login
+            <button type="submit" className="flex cursor-pointer w-full h-12 justify-center items-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+              disabled={isLoading}>
+              {isLoading ? 'Loading...' : 'Sign in'}
             </button>
+            {isError && <p className="text-red-500">{error?.data?.message || "Error"}</p>}
             <div className="flex items-center justify-end">
               <div className="text-sm">
                 <p className="font-semibold text-white">Don&apos;t have an account? <Link className='font-semibold text-indigo-400 hover:text-indigo-300' href="/register">Register</Link></p>
