@@ -6,7 +6,11 @@ export function middleware(request) {
     const { pathname } = request.nextUrl;
 
 
-    if (pathname.startsWith('/login') && token) {
+    if (!token && pathname !== '/login' && pathname !== '/register') {
+        return NextResponse.redirect(new URL('/login', request.url));
+    }
+
+    if (token && (pathname === '/login' || pathname === '/register')) {
         return NextResponse.redirect(new URL('/', request.url));
     }
 
@@ -15,6 +19,6 @@ export function middleware(request) {
 
 export const config = {
     matcher: [
-        "/login",
+        "/((?!_next/static|_next/image|favicon.ico).*)",
     ],
 };
