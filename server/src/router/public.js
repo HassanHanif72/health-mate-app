@@ -5,7 +5,7 @@ const validator = require("validator");
 const { domainList } = require("../constants/domainList.js");
 
 // Create User
-publicRouter.post("/users", async (req, res) => {
+publicRouter.post("/create-user", async (req, res) => {
     try {
         const user = new User(req.body);
         await user.save();
@@ -19,7 +19,7 @@ publicRouter.post("/users", async (req, res) => {
 });
 
 // Get all users
-publicRouter.get("/users", async (req, res) => {
+publicRouter.get("/get-users", async (req, res) => {
     try {
         const users = await User.find().select("-password -__v");
         res.status(200).json(users);
@@ -29,7 +29,7 @@ publicRouter.get("/users", async (req, res) => {
 });
 
 // Get User by ID
-publicRouter.get("/users/:id", async (req, res) => {
+publicRouter.get("/get-user/:id", async (req, res) => {
     try {
         const user = await User.findById(req.params.id).select("-password -__v");
         if (!user) {
@@ -41,12 +41,12 @@ publicRouter.get("/users/:id", async (req, res) => {
     }
 });
 
-// Update
-publicRouter.put("/users/:id", async (req, res) => {
+// Update User by ID
+publicRouter.put("/update-user/:id", async (req, res) => {
     try {
         const validDomain = domainList;
-        const valid = req.body.email ? req.body.email.split('.').pop().toLowerCase() : null;
-        if (valid && !validDomain.includes(valid)) {
+        const valid = req.body.email ? req.body.email.split('@')[1].toLowerCase() : null;
+        if (valid && !validDomain.some(d => valid.endsWith(d))) {
             throw new Error("Invalid email domain");
         }
         if (req.body.email && !validator.isEmail(req.body.email)) {
@@ -65,8 +65,8 @@ publicRouter.put("/users/:id", async (req, res) => {
     }
 });
 
-// Delete 
-publicRouter.delete("/users/:id", async (req, res) => {
+// Delete User
+publicRouter.delete("/delete-user/:id", async (req, res) => {
     try {
         const user = await User.findByIdAndDelete(req.params.id);
         if (!user) {

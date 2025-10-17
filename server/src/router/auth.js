@@ -35,8 +35,8 @@ authRouter.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid email" });
     }
     const validDomain = domainList;
-    const valid = email.split(".").pop().toLowerCase();
-    if (!validDomain.includes(valid)) {
+    const valid = email.split("@")[1].toLowerCase();
+    if (!validDomain.some(d => valid.endsWith(d))) {
       return res.status(400).json({ message: "Invalid email domain" });
     }
     const user = await User.findOne({ email });
@@ -55,8 +55,8 @@ authRouter.post("/login", async (req, res) => {
   }
 });
 
-// Signup
-authRouter.post("/signup", async (req, res) => {
+// Register
+authRouter.post("/register", async (req, res) => {
   try {
     const { firstName, lastName, email, password } = req.body;
 
@@ -69,8 +69,8 @@ authRouter.post("/signup", async (req, res) => {
     }
 
     const validDomain = domainList;
-    const valid = email.split(".").pop().toLowerCase();
-    if (!validDomain.includes(valid)) {
+    const valid = email.split("@")[1].toLowerCase();
+    if (!validDomain.some(d => valid.endsWith(d))) {
       return res.status(400).json({ message: "Invalid email domain" });
     }
 

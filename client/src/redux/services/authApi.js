@@ -3,10 +3,10 @@ import { API_URL } from '../../constants/api';
 
 export const authApi = createApi({
   reducerPath: 'authApi',
-  baseQuery: fetchBaseQuery({ 
+  baseQuery: fetchBaseQuery({
     baseUrl: `${API_URL}/auth/`,
     credentials: 'include',
-}),
+  }),
   endpoints: (builder) => ({
     login: builder.mutation({
       query: (data) => ({
