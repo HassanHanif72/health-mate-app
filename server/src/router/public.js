@@ -1,6 +1,6 @@
 const express = require("express");
 const publicRouter = express.Router();
-const { User } = require("../models/user.js");
+const { User } = require("../models/User.js");
 const validator = require("validator");
 const { domainList } = require("../constants/domainList.js");
 

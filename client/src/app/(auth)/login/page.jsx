@@ -25,7 +25,7 @@ const login = () => {
       const response = await login(form).unwrap();
       console.log("Login successful:", response);
       if (response) {
-        Router.push('/');
+        Router.push('/dashboard');
       }
     } catch (error) {
       console.error("Login failed:", error);

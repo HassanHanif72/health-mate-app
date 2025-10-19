@@ -5,6 +5,10 @@ const { connectDB } = require("./config/database");
 const { authRouter } = require("./router/auth");
 const { userDataRouter } = require("./router/userData");
 const { publicRouter } = require("./router/public");
+const { fileUploadRouter } = require("./router/fileUpload");
+const { geminiAiRouter } = require("./router/geminiAi");
+const { vitalsRouter } = require("./router/vitals");
+const { timelineRouter } = require("./router/timeline");
 const cors = require("cors");
 
 const app = express();
@@ -23,6 +27,10 @@ app.use(cors({
 app.use("/auth", authRouter);
 app.use("/user", userDataRouter);
 app.use("/public", publicRouter);
+app.use("/file", fileUploadRouter);
+app.use("/ai", geminiAiRouter);
+app.use("/vitals", vitalsRouter);
+app.use("/timeline", timelineRouter);
 
 // Connect to MongoDB
 connectDB();
