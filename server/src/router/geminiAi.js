@@ -1,45 +1,48 @@
-// server/src/router/geminiAi.js
 const express = require("express");
 const geminiAiRouter = express.Router();
+
 const { authMiddleware } = require("../middleware/auth");
 const { File } = require("../models/File");
 const { AiInsight } = require("../models/AiInsight");
 const { sendFileForAnalysis } = require("../services/geminiService");
 
+
 // POST /api/ai/process-file
+// body: { fileId } OR { fileUrl }
 geminiAiRouter.post("/process-file", authMiddleware, async (req, res) => {
   try {
     const { fileId, fileUrl } = req.body;
     let targetUrl = fileUrl;
 
     if (!targetUrl) {
-      if (!fileId) return res.status(400).json({ message: "fileId or fileUrl required" });
+      if (!fileId) {
+        return res.status(400).json({ message: "fileId or fileUrl required" });
+      }
+
       const fileDoc = await File.findById(fileId);
-      if (!fileDoc) return res.status(404).json({ message: "File not found" });
+      if (!fileDoc) {
+        return res.status(404).json({ message: "File not found" });
+      }
+
+      // Ensure file belongs to user
       if (String(fileDoc.userId) !== String(req.user._id)) {
         return res.status(403).json({ message: "Forbidden" });
       }
+
       targetUrl = fileDoc.fileUrl;
     }
 
-    // pass user context
+    // Optional: pass user context (age/gender/bloodGroup)
     const userContext = {
       age: req.user.age || null,
       gender: req.user.gender || null,
       bloodGroup: req.user.bloodGroup || null,
     };
 
-    // Call service which first extracts & validates then summarizes
+    // Call Gemini service
     const aiResult = await sendFileForAnalysis(targetUrl, { userContext });
 
-    // If the file is NOT medical, the service returns isMedical: false
-    if (!aiResult || aiResult.isMedical === false) {
-      return res.status(400).json({
-        message: "This file does not appear to be a medical report. Please upload a valid medical report."
-      });
-    }
-
-    // Save AiInsight only when isMedical = true
+    // Save AiInsight
     const insight = new AiInsight({
       userId: req.user._id,
       fileId: fileId || null,
@@ -55,21 +58,31 @@ geminiAiRouter.post("/process-file", authMiddleware, async (req, res) => {
     return res.status(200).json({ message: "AI analysis saved", insight });
   } catch (err) {
     console.error("AI process error:", err);
-    return res.status(500).json({ message: "AI processing failed", error: err.message || err });
+    return res.status(500).json({
+      message: "AI processing failed",
+      error: err.message || err,
+    });
   }
 });
 
-// GET insight and list routes (keep existing)
+
+// GET /api/ai/insights/:fileId
 geminiAiRouter.get("/insights/:fileId", authMiddleware, async (req, res) => {
   try {
     const insights = await AiInsight.findOne({ fileId: req.params.fileId }).sort({ createdAt: -1 });
-    if (!insights) return res.status(404).json({ message: "No insights found" });
+
+    if (!insights) {
+      return res.status(404).json({ message: "No insights found" });
+    }
+
     res.status(200).json(insights);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch insights" });
   }
 });
 
+
+// GET /api/ai/list (Return all AI Insights for logged-in user)
 geminiAiRouter.get("/list", authMiddleware, async (req, res) => {
   try {
     const insights = await AiInsight.find({ userId: req.user._id }).sort({ createdAt: -1 });
@@ -79,6 +92,5 @@ geminiAiRouter.get("/list", authMiddleware, async (req, res) => {
   }
 });
 
-module.exports = {
-  geminiAiRouter
-};
+
+module.exports = { geminiAiRouter };
